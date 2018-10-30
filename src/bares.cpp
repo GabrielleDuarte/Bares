@@ -8,11 +8,11 @@
 
 using namespace std;
 
-string leitor(string nome_aquivo)
+std::vector<string> leitor(string nome_aquivo)
 {
     ifstream ler;// ler o arquivo
     string expression;
-
+    std::vector<string> v_expression;
     ler.open(nome_aquivo);
 
 
@@ -25,13 +25,27 @@ string leitor(string nome_aquivo)
     {
     cout << "Arquivo aberto com sucesso" << endl;
 
-    getline(ler, expression);
-
-    return expression;
-
+        while(getline(ler, expression))
+        {
+         v_expression.push_back(expression);
+        }
     }
-
+ return v_expression;
     
+}
+
+string tratarerros(Parser::ResultType e_status)
+{
+   switch( e_status.type )
+    {
+        case 0:    return "";
+        case 1:    return "A expressão está vazia";
+        case 2:    return "Não é uma expressão de inteiros";
+        case 3:    return "Tá faltando um termo na expressão";
+        case 4:    return "Tem um simbolo errado na expressão";
+        case 5:    return "A expressão tem um inteiro fora do intervalo";          
+    }
+ return "Erro não catalogado";
 }
 
 
@@ -39,7 +53,7 @@ int main(int argc, char const *argv[])
 {
 	string nome_aquivo;
     Parser p;  
-    string aux;
+    std::vector<string> aux;
     std::vector<Token> resultado;
     Parser::ResultType e_status;
 
@@ -48,8 +62,9 @@ int main(int argc, char const *argv[])
 
 	aux = leitor(nome_aquivo);
 
-
-     e_status = p.parse(aux);
+    for (size_t i = 0; i < aux.size(); ++i)
+    {
+        e_status = p.parse(aux[i]);
 
      
      if (e_status.type == 0)
@@ -62,10 +77,10 @@ int main(int argc, char const *argv[])
      }  
      else
      {
-        cout<< "Status da expreesão inserida: expressão com erro do tipo " << e_status.type << endl;
+        cout <<tratarerros(e_status)<<endl;
 
      } 
- 
+    }
 
 	return 0;
 }
